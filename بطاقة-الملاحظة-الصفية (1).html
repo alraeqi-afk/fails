@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بطاقة الملاحظة الصفية</title>
+<style>
+  :root{
+    --teal:#14745b;
+    --teal-dark:#0d5643;
+    --teal-light:#e7f3f0;
+    --gold:#b98a2e;
+    --line:#d8ddd9;
+    --text:#22302c;
+    --bg:#f6f8f7;
+    --card:#ffffff;
+    --danger:#b4322a;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0;font-family:"Tajawal","Segoe UI",Tahoma,sans-serif;
+    background:var(--bg); color:var(--text);
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  header.top{
+    background:linear-gradient(135deg,var(--teal),var(--teal-dark));
+    color:#fff;padding:22px 18px calc(22px + env(safe-area-inset-top,0px));
+    padding-top:calc(22px + env(safe-area-inset-top,0px));
+  }
+  header.top h1{margin:0;font-size:1.5rem;}
+  header.top p{margin:4px 0 0;opacity:.9;font-size:.9rem;}
+  .wrap{max-width:960px;margin:0 auto;padding:16px;}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .card h2{
+    font-size:1.05rem;color:var(--teal-dark);margin:0 0 12px;
+    border-bottom:2px solid var(--teal-light);padding-bottom:8px;
+  }
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px 14px;}
+  label{display:block;font-size:.82rem;color:#4a5a54;margin-bottom:3px;}
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;
+    font-family:inherit;font-size:.92rem;background:#fff;color:var(--text);
+  }
+  textarea{resize:vertical;min-height:70px;}
+  .domain-title{
+    background:var(--teal);color:#fff;padding:10px 14px;border-radius:10px;
+    font-weight:700;font-size:.98rem;margin:22px 0 12px;
+  }
+  .item{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:14px;background:#fbfcfb;}
+  .item-title{font-weight:700;font-size:.95rem;margin-bottom:10px;color:var(--text);}
+  .item-title .num{color:var(--teal-dark);}
+  .ev-list{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin-bottom:12px;}
+  @media (max-width:640px){.ev-list{grid-template-columns:1fr;}}
+  .ev{display:flex;align-items:flex-start;gap:8px;font-size:.87rem;line-height:1.4;padding:4px 0;}
+  .ev input{margin-top:3px;flex:none;width:16px;height:16px;accent-color:var(--teal);}
+  .rating{display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:10px;margin-top:6px;}
+  .rating span.lbl{font-size:.85rem;color:#4a5a54;}
+  .rating label.opt{
+    display:flex;align-items:center;gap:5px;font-size:.85rem;
+    border:1px solid var(--line);border-radius:20px;padding:4px 12px;cursor:pointer;
+  }
+  .rating input{accent-color:var(--gold);}
+  .rating label.opt:has(input:checked){background:var(--teal-light);border-color:var(--teal);font-weight:700;}
+  .extra-note-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+  .extra-note-row input[type=text]{flex:1;min-width:160px;}
+  .extra-note-row .exnote-check{display:flex;align-items:center;gap:6px;font-size:.82rem;color:#4a5a54;white-space:nowrap;}
+  .extra-note-row .exnote-check input{accent-color:var(--teal);width:15px;height:15px;}
+  .status-box{
+    background:var(--teal-light);color:var(--teal-dark);font-weight:700;font-size:.88rem;
+    border-radius:8px;padding:8px 12px;margin-bottom:6px;
+  }
+  .item.done .status-box{background:#dff1e8;}
+  .scale-legend{font-size:.75rem;color:#8a978f;margin-bottom:10px;}
+  .complete-check{
+    display:flex;align-items:center;gap:7px;font-size:.85rem;font-weight:700;
+    border-top:1px dashed var(--line);padding-top:10px;color:#4a5a54;cursor:pointer;
+  }
+  .complete-check input{accent-color:var(--teal);width:17px;height:17px;}
+  .completed-badge{
+    display:inline-block;font-size:.72rem;padding:2px 9px;border-radius:12px;
+    background:#eee;color:#888;margin-inline-start:8px;
+  }
+  .item.done .completed-badge{background:#dff1e8;color:var(--teal-dark);}
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;}
+  button{
+    font-family:inherit;font-size:.88rem;padding:10px 16px;border-radius:9px;
+    border:1px solid var(--teal);background:var(--teal);color:#fff;cursor:pointer;
+  }
+  button.secondary{background:#fff;color:var(--teal-dark);}
+  button.danger{background:#fff;color:var(--danger);border-color:var(--danger);}
+  button:active{transform:translateY(1px);}
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;}
+  .summary-box{background:var(--teal-light);border-radius:10px;padding:10px;text-align:center;}
+  .summary-box .num{font-size:1.5rem;font-weight:800;color:var(--teal-dark);}
+  .summary-box .lbl{font-size:.75rem;color:#4a5a54;}
+  canvas#sigPad{
+    width:100%;height:150px;border:1px dashed var(--line);border-radius:10px;
+    background:#fff;touch-action:none;
+  }
+  .stamp-box{display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap;}
+  .stamp-box img{max-height:80px;max-width:140px;border:1px solid var(--line);border-radius:6px;padding:4px;background:#fff;}
+  footer.credit{text-align:center;color:#8a978f;font-size:.78rem;padding:20px 0 40px;}
+  #saveMsg{font-size:.78rem;color:var(--teal-dark);opacity:0;transition:opacity .3s;}
+  #saveMsg.show{opacity:1;}
+
+  @media print{
+    body{background:#fff;}
+    header.top{background:var(--teal)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .btn-row,#importModal,.no-print{display:none!important;}
+    .card{box-shadow:none;border:1px solid #bbb;break-inside:avoid;}
+    .item{break-inside:avoid;}
+    .wrap{max-width:100%;padding:0 8px;}
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap" style="padding:0;">
+    <h1>بطاقة الملاحظة الصفية</h1>
+    <p>رصد الشواهد وتقييم المؤشرات وتوقيع البطاقة وطباعتها</p>
+  </div>
+</header>
+<div class="wrap">
+
+  <div class="card no-print">
+    <div class="btn-row">
+      <button id="btnPrint" type="button">🖨️ طباعة / حفظ PDF</button>
+      <button id="btnExport" type="button" class="secondary">⬇️ تصدير البيانات</button>
+      <button id="btnImportTrigger" type="button" class="secondary">⬆️ استيراد البيانات</button>
+      <button id="btnReset" type="button" class="danger">🗑️ بطاقة جديدة</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+      <span id="saveMsg">تم الحفظ ✓</span>
+    </div>
+    <p id="printHint" style="font-size:.78rem;color:#8a978f;margin:4px 2px 0;">إن لم تفتح نافذة الطباعة، افتح هذا الرابط في متصفح خارجي (Chrome أو Safari) بدل المتصفح الداخلي لأي تطبيق مثل واتساب أو تويتر.</p>
+  </div>
+
+  <div class="card">
+    <h2>البيانات الأساسية</h2>
+    <div class="grid">
+      <div><label>اسم المدرسة</label><input type="text" id="f_school"></div>
+      <div><label>اسم المعلم / المعلمة</label><input type="text" id="f_teacher"></div>
+      <div><label>اليوم</label><input type="text" id="f_day"></div>
+      <div><label>التاريخ</label><input type="date" id="f_date"></div>
+      <div><label>المادة</label><input type="text" id="f_subject"></div>
+      <div><label>رتبة المعلم</label>
+        <select id="f_rank">
+          <option value="">اختر</option>
+          <option>ممارس</option>
+          <option>متقدم</option>
+          <option>خبير</option>
+        </select>
+      </div>
+      <div><label>موضوع الدرس</label><input type="text" id="f_topic"></div>
+      <div><label>الحصة</label><input type="text" id="f_period"></div>
+      <div><label>الفصل</label><input type="text" id="f_class"></div>
+      <div><label>عدد الطلاب</label><input type="number" id="f_students" min="0"></div>
+      <div><label>الغياب</label><input type="number" id="f_absent" min="0"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>ملخص النتائج</h2>
+    <div class="summary-grid" id="summaryGrid"></div>
+  </div>
+
+  <div id="itemsHost"></div>
+
+  <div class="card">
+    <h2>ملاحظات إضافية وتوصيات</h2>
+    <textarea id="f_notes" placeholder="اكتب الملاحظات والتوصيات هنا..."></textarea>
+  </div>
+
+  <div class="card">
+    <h2>التوقيع والاعتماد</h2>
+    <div class="grid" style="grid-template-columns:1fr 1fr;">
+      <div>
+        <label>توقيع الملاحظ/ة</label>
+        <canvas id="sigPad"></canvas>
+        <div class="btn-row no-print">
+          <button type="button" id="btnSigClear" class="secondary">مسح التوقيع</button>
+        </div>
+      </div>
+      <div>
+        <label>الختم الرسمي</label>
+        <div class="stamp-box">
+          <img id="stampImg" style="display:none">
+          <div class="btn-row no-print" style="margin:0;">
+            <button type="button" id="btnStampUpload" class="secondary">رفع الختم</button>
+            <button type="button" id="btnStampRemove" class="danger">إزالة الختم</button>
+          </div>
+          <input type="file" id="stampFile" accept="image/*" style="display:none">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="credit">تصميم أ. سُمَيّة — نسخة مخصّصة</footer>
+</div>
+<script>
+// Data model for the 17-indicator classroom observation tool
+const DATA = [
+{domain:"توفر المدرسة فرصاً متكافئة للتعلم تلبي احتياجات المتعلمين بمن فيهم ذوي الإعاقة والموهوبين", items:[
+  {n:1, title:"يتوافر في بيئة التعلم مصادر، وأنشطة متنوعة تلبي احتياجات المتعلمين ومنهم ذوي الإعاقة والموهوبين.", ev:[
+    "توافر مصادر متنوعة في بيئة التعلم (سمعية / بصرية / سمعية بصرية / حسية).",
+    "توافر أنشطة تعلم متنوعة.",
+    "تناسب خصائص المرحلة العمرية.",
+    "تراعي الفروق الفردية بين المتعلمين.",
+    "تحقق سهولة الوصول والاستخدام.",
+    "منظمة.",
+    "تلبي احتياجات ذوي الإعاقة.",
+    "تلبي احتياجات سريعي التعلم والموهوبين."]},
+  {n:2, title:"يدار الوقت في بيئة التعلم بفاعلية لدعم التعلم وتلبية احتياجات المتعلمين بمن فيهم ذوي الإعاقة والموهوبين.", ev:[
+    "يوزع الوقت على أنشطة الدرس ومراحله (التهيئة - التنفيذ - التقويم).",
+    "توزيع الوقت يراعي نوع المادة العلمية ومستوى التعقيد.",
+    "يتوافق عدد الأنشطة وأسلوب تنفيذها مع الوقت المخصص.",
+    "إتاحة الوقت الكافي للمتعلمين لتنفيذ الأنشطة والمناقشة.",
+    "يراعي تنويع الأنشطة بما يتناسب مع مراعاة الفروق الفردية بين المتعلمين.",
+    "توافر المرونة في إدارة الوقت وفقاً للموقف التعليمي.",
+    "تخصيص أنشطة تلبي احتياجات ذوي الإعاقة (إن وجد).",
+    "تخصيص أنشطة تلبي احتياجات سريعي التعلم."]},
+  {n:3, title:"يتاح للمتعلمين فرص متكافئة في الأنشطة والمناقشة الصفية، واستخدام مصادر التعلم.", ev:[
+    "توافر فرص متكافئة للمشاركة في تنفيذ الأنشطة.",
+    "توافر فرص متكافئة في استخدام مصادر التعلم.",
+    "توافر فرص متكافئة للمشاركة في المناقشة الصفية.",
+    "يستخدم المعلم أساليب تحفيز لدعم مشاركة جميع المتعلمين في الأنشطة.",
+    "يشجع ويدعم التعاون بين المتعلمين.",
+    "يستخدم طرق وأساليب متنوعة لإتاحة الفرص."]},
+]},
+{domain:"تدعم المدرسة تنفيذ المناهج؛ لتحقيق نواتج التعلم المستهدفة وفق الخطة الدراسية.", items:[
+  {n:4, title:"يتوافق تنفيذ محتوى المنهج المستهدف مع الخطة الزمنية لتوزيع المنهج.", single:true, ev:[
+    "يتوافق تنفيذ محتوى المنهج مع الخطة الزمنية لتوزيع المنهج بنسبة أقل من 50%.",
+    "نسبة التوافق (من 50 - أقل من 75%).",
+    "نسبة التوافق (من 75 - أقل من 90%).",
+    "نسبة التوافق 90% فأعلى."]},
+]},
+{domain:"تنوع المدرسة في إستراتيجيات التدريس لتلبية احتياجات المتعلمين، ودعم تعلمهم.", items:[
+  {n:5, title:"يستخدم المعلمون إستراتيجيات تدريس تتسق مع نواتج التعلم المستهدفة، والمواقف التعليمية.", ev:[
+    "تتسق إستراتيجيات التدريس مع الموقف التعليمي.",
+    "تركز على المتعلم وتراعي طبيعته.",
+    "تلائم خصائص المرحلة العمرية للمتعلمين.",
+    "تتسق مع الأنشطة ومحتوى المادة العلمية (مادة نظرية، عملية).",
+    "تتسق مع نواتج التعلم المستهدفة.",
+    "التوجيه الفردي.",
+    "تشجع على التعلم النشط.",
+    "تتسم بالشمول.",
+    "تتسم بالتمايز."]},
+  {n:6, title:"تتنوع إستراتيجيات التدريس وفقاً لقدرات المتعلمين وتراعي الفروق الفردية بينهم.", ev:[
+    "التهيئة (تطبيق أساليب لتشخيص مستويات المتعلمين وتحديد احتياجاتهم، قد تكون أسئلة).",
+    "استخدام إستراتيجيات متنوعة (مثل: العروض التقديمية، التعلم التشاركي، المناقشة الجماعية، التعلم الذاتي، التعاون، التوجيه الفردي، الأنشطة التفاعلية، استخدام التقنية الرقمية المتنوعة، الكرسي الساخن، المفاهيم الكرتونية، الصور والرسوم والأفلام، تمثيل الأدوار...).",
+    "تنوع إستراتيجيات التدريس يراعي الفروق الفردية بين المتعلمين.",
+    "إستراتيجيات التدريس تشجع المتعلمين على المشاركة والتعلم.",
+    "يستخدم أنشطة ومواد إضافية لدعم تعلم ذوي صعوبات التعلم وذوي الإعاقة.",
+    "يستخدم أنشطة ومواد إثرائية لسريعي التعلم والموهوبين."]},
+]},
+{domain:"تفعل المدرسة التعلم الإلكتروني لتلبية احتياجات المتعلمين، ودعم تعلمهم.", items:[
+  {n:7, title:"يدمج المعلم بين التعلم الصفي والتعلم الإلكتروني وفقاً للموقف التعليمي.", ev:[
+    "يوظف أدوات وتطبيقات التعلم الإلكتروني في دعم التعلم داخل الصف (كمصدر لتوسيع المعرفة - تحديد مواد تعليمية).",
+    "يقدم محتوى إلكتروني يتناسب مع موضوع الدرس.",
+    "يستخدم أدوات وتطبيقات التعلم الإلكتروني التي تناسب الموقف التعليمي.",
+    "يستخدم أدوات وتطبيقات التعلم الإلكتروني وفقاً لقدرات وخصائص المتعلمين.",
+    "يستخدم أدوات وتطبيقات إلكترونية متنوعة (الحاسوب - الإنترنت - وسائط متعددة على الحاسوب وبالموبايل...).",
+    "يوظف أدوات التعلم الإلكتروني في تنفيذ المهام والواجبات المنزلية بأنشطة مبتكرة."]},
+]},
+{domain:"توفر المدرسة أنشطة تعلم تطبيقية ترتبط بحياة المتعلمين.", items:[
+  {n:8, title:"تركز أنشطة التعلم على تطبيقات عملية ترتبط بحياة المتعلمين.", ev:[
+    "توافر أنشطة تعلم تركز على التطبيقات العملية للمعارف والمهارات (مثل: العروض التقديمية والمناقشات الجماعية والأنشطة العملية).",
+    "تلائم خصائص المرحلة العمرية للمتعلمين.",
+    "ترتبط الأنشطة بمواقف من واقع الحياة.",
+    "تشجع الأنشطة المتعلمين على البحث والاستقصاء.",
+    "تفعيل التقنية في الأنشطة مثل الفيديوهات والتطبيقات الإلكترونية والوسائط الاجتماعية.",
+    "تحفز الأنشطة المتعلمين على المشاركة فيها (الأنشطة جاذبة).",
+    "استخدام مشروعات التعلم القائمة على المشكلات والتحديات."]},
+]},
+{domain:"تنمي المدرسة المهارات القرائية والعددية الأساسية لدى المتعلمين.", items:[
+  {n:9, title:"تشجع بيئة التعلم على تنمية مهارات القراءة والكتابة، والمهارات العددية (الحساب) لدى المتعلمين.", ev:[
+    "توافر أنشطة تعلم تركز على التطبيقات العملية للمعارف والمهارات (مثل العروض التقديمية والمناقشات الجماعية والأنشطة العملية).",
+    "توافر مصادر في بيئة التعلم تدعم تنمية مهارات القراءة والكتابة.",
+    "تتوافر مصادر في بيئة التعلم تدعم تنمية المهارات العددية (الحساب).",
+    "يستخدم المعلم طرق وأساليب تعزز تنمية مهارات القراءة والكتابة.",
+    "يستخدم المعلم طرق وأساليب تعزز تنمية المهارات العددية (الحساب).",
+    "يستخدم طرق وأساليب متنوعة (أدوات التقنية الرقمية، النصوص، الصور، الرسوم، أفلام...).",
+    "الطرق والأساليب تراعي الفروق الفردية بين المتعلمين.",
+    "يوظف المتعلمون مهارات القراءة والكتابة في تنفيذ أنشطة التعلم (قراءة النصوص والمقالات وكتابتها).",
+    "يوظف المتعلمون المهارات العددية (الحساب) في تنفيذ أنشطة التعلم."]},
+]},
+{domain:"تنمي المدرسة مهارات التفكير العليا لدى المتعلمين.", items:[
+  {n:10, title:"تشجع بيئة التعلم على تنمية مهارات التفكير (التفكير الناقد والإبداعي وحل المشكلات) لدى المتعلمين.", ev:[
+    "يستخدم المعلم طرق وأساليب تستهدف تنمية مهارات التفكير الناقد (التحليل، والاستنتاج، والتقويم) لدى جميع المتعلمين.",
+    "يوظف المتعلمون مهارات التفكير الناقد في تنفيذ أنشطة التعلم (مثل: طرح الأسئلة، التحليل والربط بين الأفكار والاستنتاج والتقويم).",
+    "يستخدم طرق وأساليب تستهدف تنمية مهارات حل المشكلات.",
+    "يوظف المتعلمون خطوات ومهارات حل المشكلات في تنفيذ أنشطة التعلم (مثل: تحديد المشكلة، فهم المشكلة، اختيار الحل المناسب، تقويم الحلول...).",
+    "يستخدم طرق وأساليب تستهدف تنمية مهارات التفكير الإبداعي (الطلاقة، المرونة، الأصالة) لدى جميع المتعلمين.",
+    "يوظف المتعلمون التفكير الإبداعي في تنفيذ أنشطة التعلم (مثل: توليد مجموعة من الأفكار المتنوعة، أفكار جديدة، حل مهام مفتوحة النهاية، اقتراح حلول إبداعية، إعادة صياغة الأفكار بطرق جديدة).",
+    "يستخدم طرق وأساليب متنوعة (أدوات التقنية الرقمية، النصوص، الصور، الرسوم، أفلام...).",
+    "الطرق والأساليب تراعي الفروق الفردية بين المتعلمين.",
+    "يوفر أنشطة إثرائية لتنمية مهارات التفكير لدى المتعلمين."]},
+]},
+{domain:"تنمي المدرسة المهارات العاطفية والاجتماعية لدى المتعلمين.", items:[
+  {n:11, title:"تشجع بيئة التعلم على التواصل الفعال، والتعاطف والاحترام المتبادل بين المتعلمين.", ev:[
+    "يوفر المعلم أنشطة تعلم وأساليب تستهدف تنمية مهارات التواصل الفعال بين المتعلمين.",
+    "ينظم الحوار والمناقشات الجماعية وتبادل الأفكار والآراء في بيئة التعلم.",
+    "توفر أنشطة تعلم وأساليب تستهدف تنمية القدرة على التحكم في العواطف وضبط الانفعالات.",
+    "تنظيم بيئة التعلم يشجع العمل التعاوني والمناقشة والحوار الفعال.",
+    "يعبر المتعلمون عن آرائهم وأفكارهم بثقة ووضوح في بيئة التعلم.",
+    "يسود الاحترام المتبادل والتعاطف بين المتعلمين في بيئة التعلم (الإصغاء بفاعلية، تقبل الآراء ووجهات النظر الأخرى، احترام حقوق الآخرين، تقبل التنوع، المبادرة في تقديم الدعم والمساندة).",
+    "يشارك المتعلمون في أنشطة جماعية والعمل بروح الفريق."]},
+]},
+{domain:"تنمي المدرسة المهارات الرقمية لدى المتعلمين.", items:[
+  {n:12, title:"تعزز أنشطة التعلم مهارات البحث واستخدام التقنية الرقمية لدى المتعلمين.", ev:[
+    "توفير التجهيزات والمصادر ومواد التقنية الرقمية في بيئة التعلم.",
+    "توفير أنشطة تعلم وأساليب لتنمية مهارات التقنية الرقمية والتعامل مع البيانات لدى المتعلمين.",
+    "يوظف المتعلمون مهارات التقنية الرقمية في التعلم (البحث والاستقصاء، وتنفيذ المهام، أداء الواجبات، تقديم العروض، الكتابة...).",
+    "المعلم يشجع المتعلمين على البحث في المصادر الموثوقة والاستخدام الآمن للتقنية الرقمية.",
+    "يتابع ويقدم الدعم للمتعلمين عند استخدام التقنية الرقمية.",
+    "يشجع المتعلمين على التزام قوانين وأخلاقيات أمن المعلومات وحقوق الملكية الفكرية.",
+    "المصادر والأنشطة متنوعة.",
+    "تميز المتعلمون في توظيف مهارات التقنية الرقمية."]},
+]},
+{domain:"تعزز المدرسة دافعية المتعلمين للتعلم والاستمتاع به.", items:[
+  {n:13, title:"يستخدم المعلم أساليب تحفيز تعزز الدافعية لدى المتعلمين.", ev:[
+    "تنظيم بيئة التعلم يشجع التفاعل بإيجابية والدافعية للتعلم.",
+    "يستخدم أساليب وأنشطة تعلم متنوعة (ألعاب، تمثيل أدوار، تجارب عملية، قصص، صور، رسوم، أفلام...).",
+    "تشجع الأنشطة والأساليب المتعلمين على المشاركة.",
+    "تشجع الأنشطة والأساليب على التفاعل والاندماج في التعلم والاستمتاع به.",
+    "تشجع الأنشطة والأساليب المتعلمين على التواصل والتعاون.",
+    "يستخدم المعلم أساليب لتحفيز المتعلمين وتشجيعهم على المشاركة بإيجابية في تنفيذ الأنشطة.",
+    "يستخدم أساليب تحفيز متنوعة لزيادة دافعية المتعلمين (الإشادة والثناء، المكافآت، الاحتفاء بالمنجزات...).",
+    "أن يكون المعلم مثيراً للاهتمام ومتحمساً.",
+    "يوفر المعلم أنشطة تعلم وأساليب تثير الفضول وحب الاستطلاع لدى المتعلمين.",
+    "ربط الدرس بحياة المتعلمين.",
+    "توفير فرص لتعبير المتعلمين عن آرائهم."]},
+  {n:14, title:"يشارك المتعلمون في أنشطة التعلم بفاعلية، ويستمتعون بها.", ev:[
+    "يسود في بيئة التعلم الشعور بالراحة والمتعة.",
+    "يسود في بيئة التعلم الاحترام والتقدير المتبادل.",
+    "يظهر المتعلمون الرغبة في التعلم (مثل: الانتباه، الإنصات، التساؤل، الفضول وحب الاستطلاع).",
+    "يظهر المتعلمون الاندماج والمشاركة في الأنشطة بإيجابية.",
+    "يعبر المتعلمون عن آرائهم وأفكارهم بثقة.",
+    "يبادر المتعلمون في تقديم الدعم والمساندة لزملائهم والتعاون في تنفيذ الأنشطة."]},
+]},
+{domain:"تقوم المدرسة أداء المتعلمين باستخدام أساليب وأدوات تقويم متنوعة وفاعلة.", items:[
+  {n:15, title:"يستخدم المعلم أساليب وأدوات تقويم متنوعة (التشخيصي، والتكويني، والختامي).", ev:[
+    "يستخدم المعلم أساليب وأدوات تقويم تشخيصية لتحديد مستوى المتعلمين في المفاهيم الأساسية والمهارات اللازمة للتعلم.",
+    "يطبق أساليب وأدوات تقويم متنوعة تشخيصية.",
+    "يستخدم أساليب وأدوات التقويم البنائي (التكويني) في أثناء الدرس لمتابعة التعلم.",
+    "يستخدم أساليب وأدوات تقويم ختامية لقياس مدى تحقيق المتعلمين للأهداف التعليمية المحددة في نهاية الدرس.",
+    "يستخدم أساليب وأدوات تقويم متنوعة (مثل: تقويم ذاتي، تقويم الأقران، مهام مفتوحة النهاية، مشروعات، مهام أدائية، ملف الإنجاز...).",
+    "يشارك المتعلمون في تقويم أدائهم بفاعلية.",
+    "يشجع المتعلمين على المشاركة في تقويم أدائهم بفاعلية.",
+    "تطبيق أساليب وأدوات تقويم مبتكرة."]},
+  {n:16, title:"يستخدم المعلم أساليب وأدوات تقويم متنوعة تحقق التمايز في أداء المتعلمين.", ev:[
+    "يستخدم المعلم أساليب وأدوات تقويم تحقق التمايز في مستويات الأداء للمتعلمين.",
+    "توفير بيئة تعليمية عادلة لجميع المتعلمين.",
+    "يستخدم أساليب وأدوات تقويم متنوعة (مثل: التقويم الذاتي، تقويم الأقران، استخدام التقنية الرقمية في التقويم، مهام مفتوحة النهاية، مشروعات، مهام أدائية، ملف الإنجاز...).",
+    "أساليب وأدوات التقويم تكشف عن الفروق الفردية بين المتعلمين.",
+    "تراعي أنماط تعلم المتعلمين المختلفة (سمعي - بصري - اجتماعي - حركي - شخصي).",
+    "يطبق المتعلمون أساليب وأدوات التقويم الذاتي.",
+    "يشارك المتعلمون في تقويم أقرانهم.",
+    "يتابع المعلم تطبيق المتعلمين أساليب وأدوات التقويم.",
+    "يستخدم محكات واضحة تحدد مستوى الإنجاز الفعلي للمتعلم."]},
+]},
+{domain:"تقدم المدرسة التغذية الراجعة للمتعلمين بانتظام.", items:[
+  {n:17, title:"يقدم المعلم تغذية راجعة للمتعلمين حسب الموقف التعليمي تركز على تحسين أدائهم.", ev:[
+    "توافر تغذية راجعة للمتعلمين (فورية، بناءة، ترتبط بالموقف التعليمي).",
+    "تقديم التغذية الراجعة بأساليب متنوعة (التعليق الشفوي، أو الكتابة، أو باستخدام التقنية، التحفيز والتشجيع، تقديم مقترحات التحسين، تصحيح المهام الفوري...).",
+    "تقديم التغذية الراجعة بانتظام للمتعلمين.",
+    "تقديم التغذية الراجعة بأساليب تراعي الفروق الفردية بين المتعلمين.",
+    "يستجيب المتعلمون بإيجابية للتغذية الراجعة.",
+    "يوظف المتعلمون التغذية الراجعة في تحسين أدائهم.",
+    "التغذية الراجعة تعزز التعلم الذاتي لدى المتعلمين.",
+    "تقديم التغذية الراجعة بطريقة مميزة."]},
+]},
+];
+
+(function(){
+"use strict";
+
+const LEVEL_LABELS = {1:'منخفضة',2:'متوسطة',3:'مرتفعة',4:'مرتفعة جدًا'};
+
+function renderItems(){
+  const host = document.getElementById('itemsHost');
+  let html = '';
+  DATA.forEach(domain=>{
+    html += `<div class="domain-title">${domain.domain}</div>`;
+    domain.items.forEach(item=>{
+      html += `<div class="item" id="item-${item.n}">`;
+      html += `<div class="item-title"><span class="num">${item.n}.</span> ${item.title}<span class="completed-badge" id="badge-${item.n}">غير معتمدة بعد</span></div>`;
+      html += `<div class="ev-list">`;
+      item.ev.forEach((text,i)=>{
+        const id = `ev-${item.n}-${i}`;
+        const inputType = item.single ? 'radio' : 'checkbox';
+        const nameAttr = item.single ? `name="ev-${item.n}"` : '';
+        html += `<label class="ev" for="${id}"><input type="${inputType}" ${nameAttr} id="${id}" data-item="${item.n}"><span>${text}</span></label>`;
+      });
+      html += `</div>`;
+
+      // جوانب أخرى لم تذكر
+      html += `<div class="extra-note-row">
+        <input type="text" id="exnote-${item.n}" placeholder="جوانب أخرى لم تذكر">
+        <label class="exnote-check"><input type="checkbox" id="exnotechk-${item.n}"> دوّن الشاهد أو الملاحظة</label>
+      </div>`;
+
+      // الحالة/التقدير المحسوب تلقائيًا
+      html += `<div class="status-box" id="status-${item.n}"></div>`;
+      if(!item.single){
+        html += `<div class="scale-legend">٢ فأقل: منخفضة · ٣-٤: متوسطة · ٥: مرتفعة · ٦ فأكثر: مرتفعة جدًا</div>`;
+      }
+
+      // اكتمال ملاحظة الفقرة
+      html += `<label class="complete-check"><input type="checkbox" id="complete-${item.n}"> اكتملت ملاحظة الفقرة</label>`;
+
+      html += `</div>`;
+    });
+  });
+  host.innerHTML = html;
+}
+
+function computeItemLevel(item){
+  if(item.single){
+    const checkedInputs = Array.from(document.querySelectorAll(`input[name="ev-${item.n}"]`));
+    const idx = checkedInputs.findIndex(i=>i.checked);
+    if(idx === -1) return {count:0, val:0, label:'لم يُحدد بعد'};
+    const val = idx+1;
+    return {count:1, val, label:LEVEL_LABELS[val]};
+  }
+  let count = document.querySelectorAll(`input[data-item="${item.n}"]:checked`).length;
+  const exchk = document.getElementById(`exnotechk-${item.n}`);
+  const extxt = document.getElementById(`exnote-${item.n}`);
+  if(exchk && exchk.checked && extxt && extxt.value.trim()) count++;
+  if(count === 0) return {count:0, val:0, label:'لم تُلاحظ شواهد بعد'};
+  let val;
+  if(count<=2) val=1;
+  else if(count<=4) val=2;
+  else if(count===5) val=3;
+  else val=4;
+  return {count, val, label:LEVEL_LABELS[val]};
+}
+
+function allItems(){
+  const arr = [];
+  DATA.forEach(d=>d.items.forEach(i=>arr.push(i)));
+  return arr;
+}
+
+function updateSummary(){
+  const items = allItems();
+  let confirmed = 0;
+  const rateCounts = {1:0,2:0,3:0,4:0};
+  let rated = 0;
+  items.forEach(item=>{
+    const lv = computeItemLevel(item);
+    const completeChk = document.getElementById(`complete-${item.n}`);
+    const isConfirmed = !!(completeChk && completeChk.checked);
+    if(isConfirmed) confirmed++;
+    if(lv.val>0){ rateCounts[lv.val]++; rated++; }
+
+    const statusEl = document.getElementById(`status-${item.n}`);
+    if(statusEl){
+      const confirmTxt = isConfirmed ? 'معتمدة' : 'غير معتمدة بعد';
+      if(item.single){
+        statusEl.textContent = lv.count>0
+          ? `المستوى المحدد: ${lv.label} - ${confirmTxt}`
+          : `لم يُحدد المستوى بعد - ${confirmTxt}`;
+      } else {
+        statusEl.textContent = lv.count>0
+          ? `${lv.count} شواهد - متحقق بدرجة ${lv.label} - ${confirmTxt}`
+          : `لا شواهد محددة بعد - ${confirmTxt}`;
+      }
+    }
+    const el = document.getElementById(`item-${item.n}`);
+    const badge = document.getElementById(`badge-${item.n}`);
+    if(el && badge){
+      if(isConfirmed){ el.classList.add('done'); badge.textContent='معتمدة'; }
+      else { el.classList.remove('done'); badge.textContent='غير معتمدة بعد'; }
+    }
+  });
+  const total = items.length;
+  const avg = rated ? (( (rateCounts[1]*1)+(rateCounts[2]*2)+(rateCounts[3]*3)+(rateCounts[4]*4) ) / rated).toFixed(2) : '—';
+  const grid = document.getElementById('summaryGrid');
+  grid.innerHTML = `
+    <div class="summary-box"><div class="num">${confirmed}/${total}</div><div class="lbl">فقرات معتمدة</div></div>
+    <div class="summary-box"><div class="num">${avg}</div><div class="lbl">متوسط التقدير (من 4)</div></div>
+    <div class="summary-box"><div class="num">${rateCounts[4]}</div><div class="lbl">مرتفعة جدًا</div></div>
+    <div class="summary-box"><div class="num">${rateCounts[3]}</div><div class="lbl">مرتفعة</div></div>
+    <div class="summary-box"><div class="num">${rateCounts[2]}</div><div class="lbl">متوسطة</div></div>
+    <div class="summary-box"><div class="num">${rateCounts[1]}</div><div class="lbl">منخفضة</div></div>
+  `;
+}
+
+/* ---------- Save / Load (localStorage) ---------- */
+const STORE_KEY = 'classroomObservationCard_v1';
+let saveTimer=null;
+
+function collectData(){
+  const out = {fields:{}, items:{}, notes:'', sig:null, stamp:null};
+  ['f_school','f_teacher','f_day','f_date','f_subject','f_rank','f_topic','f_period','f_class','f_students','f_absent'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) out.fields[id] = el.value;
+  });
+  document.querySelectorAll('#itemsHost input').forEach(inp=>{
+    if(inp.type === 'checkbox'){
+      out.items[inp.id] = inp.checked;
+    } else if(inp.type === 'radio'){
+      if(inp.checked) out.items[inp.name] = inp.value;
+    } else {
+      out.items[inp.id] = inp.value;
+    }
+  });
+  out.notes = document.getElementById('f_notes').value;
+  out.sig = sigHasContent ? sigCanvas.toDataURL() : null;
+  out.stamp = stampDataUrl;
+  return out;
+}
+
+function applyData(d){
+  if(!d) return;
+  Object.keys(d.fields||{}).forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = d.fields[id];
+  });
+  Object.keys(d.items||{}).forEach(key=>{
+    const val = d.items[key];
+    if(typeof val === 'boolean'){
+      const el = document.getElementById(key);
+      if(el) el.checked = val;
+    } else {
+      // could be a radio group (name) or a text input (id)
+      const radio = document.querySelector(`#itemsHost input[type="radio"][name="${key}"][value="${val}"]`);
+      if(radio){ radio.checked = true; }
+      else {
+        const el = document.getElementById(key);
+        if(el) el.value = val;
+      }
+    }
+  });
+  document.getElementById('f_notes').value = d.notes || '';
+  if(d.stamp){ stampDataUrl = d.stamp; showStamp(); }
+  if(d.sig){
+    const img = new Image();
+    img.onload = ()=>{ sigCtx.drawImage(img,0,0,sigCanvas.width,sigCanvas.height); sigHasContent = true; };
+    img.src = d.sig;
+  }
+  updateSummary();
+}
+
+function saveNow(){
+  try{
+    localStorage.setItem(STORE_KEY, JSON.stringify(collectData()));
+    const msg = document.getElementById('saveMsg');
+    msg.classList.add('show');
+    setTimeout(()=>msg.classList.remove('show'), 1200);
+  }catch(e){ console.warn('save failed', e); }
+}
+
+function onChange(){
+  updateSummary();
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, 500);
+}
+
+function loadSaved(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw) applyData(JSON.parse(raw));
+  }catch(e){ console.warn('load failed', e); }
+}
+
+function exportData(){
+  const data = collectData();
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const name = (document.getElementById('f_teacher').value || 'بطاقة').trim();
+  a.href = url; a.download = `بطاقة-ملاحظة-${name}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function importData(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const d = JSON.parse(reader.result);
+      applyData(d);
+      saveNow();
+    }catch(e){ alert('تعذّر قراءة الملف'); }
+  };
+  reader.readAsText(file);
+  evt.target.value = '';
+}
+
+function resetAll(){
+  if(!confirm('سيتم مسح جميع البيانات الحالية وبدء بطاقة جديدة. هل تريد المتابعة؟')) return;
+  localStorage.removeItem(STORE_KEY);
+  document.querySelectorAll('#itemsHost input[type=checkbox], #itemsHost input[type=radio]').forEach(i=>i.checked=false);
+  document.querySelectorAll('#itemsHost input[type=text]').forEach(i=>i.value='');
+  document.querySelectorAll('.card input[type=text],.card input[type=date],.card input[type=number]').forEach(i=>{
+    if(!i.closest('#itemsHost')) i.value='';
+  });
+  document.getElementById('f_rank').value='';
+  document.getElementById('f_notes').value='';
+  clearSig();
+  removeStamp();
+  updateSummary();
+}
+
+/* ---------- Signature pad ---------- */
+let sigCanvas, sigCtx, sigDrawing=false, sigHasContent=false;
+function initSig(){
+  sigCanvas = document.getElementById('sigPad');
+  const ratio = window.devicePixelRatio || 1;
+  const rect = sigCanvas.getBoundingClientRect();
+  sigCanvas.width = rect.width * ratio;
+  sigCanvas.height = rect.height * ratio;
+  sigCtx = sigCanvas.getContext('2d');
+  sigCtx.scale(ratio, ratio);
+  sigCtx.lineWidth = 2;
+  sigCtx.lineCap = 'round';
+  sigCtx.strokeStyle = '#0d5643';
+
+  function pos(e){
+    const r = sigCanvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {x: clientX - r.left, y: clientY - r.top};
+  }
+  function start(e){ sigDrawing = true; const p = pos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x,p.y); e.preventDefault(); }
+  function move(e){ if(!sigDrawing) return; const p = pos(e); sigCtx.lineTo(p.x,p.y); sigCtx.stroke(); sigHasContent = true; e.preventDefault(); }
+  function end(){ if(sigDrawing){ sigDrawing=false; onChange(); } }
+
+  sigCanvas.addEventListener('mousedown', start);
+  sigCanvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  sigCanvas.addEventListener('touchstart', start, {passive:false});
+  sigCanvas.addEventListener('touchmove', move, {passive:false});
+  sigCanvas.addEventListener('touchend', end);
+}
+function clearSig(){
+  if(!sigCtx) return;
+  sigCtx.clearRect(0,0,sigCanvas.width,sigCanvas.height);
+  sigHasContent = false;
+  onChange();
+}
+
+/* ---------- Stamp upload ---------- */
+let stampDataUrl = null;
+function uploadStamp(evt){
+  const file = evt.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{ stampDataUrl = reader.result; showStamp(); onChange(); };
+  reader.readAsDataURL(file);
+}
+function showStamp(){
+  const img = document.getElementById('stampImg');
+  if(stampDataUrl){ img.src = stampDataUrl; img.style.display='inline-block'; }
+}
+function removeStamp(){
+  stampDataUrl = null;
+  const img = document.getElementById('stampImg');
+  img.style.display='none'; img.removeAttribute('src');
+  onChange();
+}
+
+/* ---------- init ---------- */
+function doPrint(){
+  try{
+    window.focus();
+    setTimeout(()=>{ window.print(); }, 60);
+  }catch(e){
+    console.warn('print failed', e);
+    alert('تعذّر فتح نافذة الطباعة تلقائيًا. الرجاء فتح هذا الرابط في متصفح خارجي (Chrome أو Safari) بدل متصفح أي تطبيق آخر (مثل واتساب) ثم إعادة المحاولة.');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  renderItems();
+  initSig();
+  loadSaved();
+  updateSummary();
+
+  // ربط الأزرار الثابتة
+  document.getElementById('btnPrint').addEventListener('click', doPrint);
+  document.getElementById('btnExport').addEventListener('click', exportData);
+  document.getElementById('btnImportTrigger').addEventListener('click', ()=>document.getElementById('importFile').click());
+  document.getElementById('importFile').addEventListener('change', importData);
+  document.getElementById('btnReset').addEventListener('click', resetAll);
+  document.getElementById('btnSigClear').addEventListener('click', clearSig);
+  document.getElementById('btnStampUpload').addEventListener('click', ()=>document.getElementById('stampFile').click());
+  document.getElementById('stampFile').addEventListener('change', uploadStamp);
+  document.getElementById('btnStampRemove').addEventListener('click', removeStamp);
+
+  // تفويض أحداث حقول المؤشرات (شواهد، ملاحظات، اكتمال)
+  const itemsHost = document.getElementById('itemsHost');
+  itemsHost.addEventListener('change', onChange);
+  itemsHost.addEventListener('input', onChange);
+
+  // حقول البيانات الأساسية والملاحظات
+  document.querySelectorAll('.card input, .card select, .card textarea').forEach(el=>{
+    if(el.closest('#itemsHost')) return;
+    if(['importFile','stampFile'].includes(el.id)) return;
+    el.addEventListener('input', onChange);
+    el.addEventListener('change', onChange);
+  });
+});
+})();
+
+</script>
+</body>
+</html>
